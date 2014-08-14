@@ -10,17 +10,28 @@ statistical methods and software for processing and interpreting the data.
 
 Dataset Loaded from: [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) 
 
-First load above data 
+## Loading and preprocessing the data
 
 
 ```r
 col_classes=c("numeric","character","numeric");
 act_data <- read.csv('activity.csv',header=TRUE,colClasses=col_classes);
+```
+
+```
+## Warning: cannot open file 'activity.csv': No such file or directory
+```
+
+```
+## Error: cannot open the connection
+```
+
+```r
 act_by_day <- aggregate(x=act_data,by=as.list(act_data$date),FUN=sum);
 ```
 
 ```
-## Error: arguments must have same length
+## Error: object 'act_data' not found
 ```
 
 ```r
@@ -43,7 +54,11 @@ act_by_Day_sql <- sqldf('select date,sum(steps) Total_Steps from act_data group 
 ## Loading required package: tcltk
 ```
 
-Histogram of the total number of steps taken each day
+```
+## Error: RS-DBI driver: (error in statement: no such table: act_data)
+```
+
+## What is mean total number of steps taken per day?
 
 
 ```r
@@ -51,7 +66,9 @@ hist(as.numeric(act_by_Day_sql$Total_Steps),xlab="Total Steps",
                 main="Total number of steps taken each day")
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+```
+## Error: object 'act_by_Day_sql' not found
+```
 
 
 Mean total number of steps taken per day:
@@ -61,7 +78,7 @@ mean(as.numeric(act_by_Day_sql$Total_Steps), na.rm = TRUE);
 ```
 
 ```
-## [1] 10766
+## Error: object 'act_by_Day_sql' not found
 ```
 
 ```r
@@ -69,14 +86,23 @@ median(as.numeric(act_by_Day_sql$Total_Steps), na.rm = TRUE);
 ```
 
 ```
-## [1] 10765
+## Error: object 'act_by_Day_sql' not found
 ```
+
+## What is the average daily activity pattern?
 
 A time series plotof the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
 ```r
 act_by_5min <- sqldf('select interval,avg(steps) avg_steps from act_data group by interval');
+```
+
+```
+## Error: RS-DBI driver: (error in statement: no such table: act_data)
+```
+
+```r
 library(ggplot2)
 ```
 
@@ -85,7 +111,9 @@ library(ggplot2)
 ggplot(act_by_5min,aes(interval,avg_steps)) + geom_line() +xlab("5 Min Intervals") + ylab("Average Steps for all days");
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+```
+## Error: object 'act_by_5min' not found
+```
 
 maximum number of steps during 5-minute interval, on average across all the days in the dataset
 
@@ -95,7 +123,7 @@ act_by_5min$interval[act_by_5min$avg_steps == max(act_by_5min$avg_steps)]
 ```
 
 ```
-## [1] 835
+## Error: object 'act_by_5min' not found
 ```
 
 
@@ -107,18 +135,45 @@ sum(is.na(act_data$steps));
 ```
 
 ```
-## [1] 2304
+## Error: object 'act_data' not found
 ```
 
-populate missing values
+## Imputing missing values
 
 
 ```r
 act_data_clean <- na.omit(act_data);
-act_day_avg <- sqldf("select date,avg(steps) steps from act_data_clean group by date ");
-act_data$day <- weekdays(as.Date(act_data$date));
-act_data$day_type <- "Weekday";
+```
 
+```
+## Error: object 'act_data' not found
+```
+
+```r
+act_day_avg <- sqldf("select date,avg(steps) steps from act_data_clean group by date ");
+```
+
+```
+## Error: RS-DBI driver: (error in statement: no such table: act_data_clean)
+```
+
+```r
+act_data$day <- weekdays(as.Date(act_data$date));
+```
+
+```
+## Error: object 'act_data' not found
+```
+
+```r
+act_data$day_type <- "Weekday";
+```
+
+```
+## Error: object 'act_data' not found
+```
+
+```r
 for(i in 1:nrow(act_data)){
     if (is.na(act_data[i,1])){
         if (is.na(act_day_avg$date[act_data[i,2]])){
@@ -132,8 +187,18 @@ for(i in 1:nrow(act_data)){
     }    
     
 }
+```
 
+```
+## Error: object 'act_data' not found
+```
+
+```r
 act_by_Day_sql <- sqldf('select date,sum(steps) Total_Steps from act_data group by date');
+```
+
+```
+## Error: RS-DBI driver: (error in statement: no such table: act_data)
 ```
 
 Histogram of the total number of steps taken each day - with CLEAN data
@@ -144,7 +209,9 @@ hist(as.numeric(act_by_Day_sql$Total_Steps),xlab="Total Steps",
      main="Total number of steps taken each day - CLEAN data")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9.png) 
+```
+## Error: object 'act_by_Day_sql' not found
+```
 
 
 Mean total number of steps taken per day - with CLEAN data
@@ -154,7 +221,7 @@ mean(as.numeric(act_by_Day_sql$Total_Steps));
 ```
 
 ```
-## [1] 9354
+## Error: object 'act_by_Day_sql' not found
 ```
 
 ```r
@@ -162,7 +229,7 @@ median(as.numeric(act_by_Day_sql$Total_Steps));
 ```
 
 ```
-## [1] 10395
+## Error: object 'act_by_Day_sql' not found
 ```
 
 Mean and Median after adding missing date differ vastly, hence it is always good idea to fill missing data, and compare difference
@@ -170,11 +237,21 @@ Mean and Median after adding missing date differ vastly, hence it is always good
 
 ```r
 act_data$day_type <- factor(act_data$day_type);
+```
 
+```
+## Error: object 'act_data' not found
+```
+
+```r
 act_clean_by_weekday <- sqldf("select avg(steps) steps, interval, day_type from act_data group by interval, day_type");
 ```
 
-Weekday and weekend activity comparison
+```
+## Error: RS-DBI driver: (error in statement: no such table: act_data)
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
 
 
 ```r
@@ -182,8 +259,5 @@ qplot(interval,steps, data=act_clean_by_weekday, facets=.~day_type,color=day_typ
 ```
 
 ```
-## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
-## geom_smooth: method="auto" and size of largest group is <1000, so using loess. Use 'method = x' to change the smoothing method.
+## Error: object 'act_clean_by_weekday' not found
 ```
-
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12.png) 

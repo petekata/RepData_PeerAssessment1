@@ -10,7 +10,7 @@ statistical methods and software for processing and interpreting the data.
 
 Dataset Loaded from: [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) 
 
-First load above data 
+## Loading and preprocessing the data
 
 ```{r}
 col_classes=c("numeric","character","numeric");
@@ -21,7 +21,7 @@ act_by_Day_sql <- sqldf('select date,sum(steps) Total_Steps from act_data group 
 
 ```
 
-Histogram of the total number of steps taken each day
+## What is mean total number of steps taken per day?
 
 ```{r fig.width=7, fig.height=6}
 hist(as.numeric(act_by_Day_sql$Total_Steps),xlab="Total Steps",
@@ -34,6 +34,8 @@ Mean total number of steps taken per day:
 mean(as.numeric(act_by_Day_sql$Total_Steps), na.rm = TRUE);
 median(as.numeric(act_by_Day_sql$Total_Steps), na.rm = TRUE);
 ```
+
+## What is the average daily activity pattern?
 
 A time series plotof the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
@@ -64,7 +66,7 @@ sum(is.na(act_data$steps));
 
 ```
 
-populate missing values
+## Imputing missing values
 
 ```{r}
 act_data_clean <- na.omit(act_data);
@@ -112,7 +114,7 @@ act_clean_by_weekday <- sqldf("select avg(steps) steps, interval, day_type from 
 
 ```
 
-Weekday and weekend activity comparison
+## Are there differences in activity patterns between weekdays and weekends?
 
 ```{r fig.width=7, fig.height=6}
 qplot(interval,steps, data=act_clean_by_weekday, facets=.~day_type,color=day_type,geom = c("point","smooth"));
